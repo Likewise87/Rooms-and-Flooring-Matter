@@ -1,0 +1,35 @@
+# Local tooling / editors
+.cursor/
+**/.cursor/
+.vscode/
+.idea/
+.vs/
+**/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.code-workspace
+
+# Staging / scratch
+tools/_workshop_stage/
+
+# Build outputs
+**/[Bb]in/
+**/[Oo]bj/
+*.pdb
+
+# Bundled dependency DLLs (Harmony comes from Workshop dependency)
+Assemblies/0Harmony.dll
+Assemblies/0Harmony.xml
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Secrets
+.env
+.env.*
+*.pem
+credentials.json
