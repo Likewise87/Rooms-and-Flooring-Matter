@@ -10,6 +10,7 @@ namespace TSA.RoomsAndFlooringMatter
     /// <summary>
     /// Table header filter icon, slate choice tiles, and anchored dropdowns for the floor picker.
     /// </summary>
+    [StaticConstructorOnStartup]
     public static class FloorPickerTableHeader
     {
         public const float FilterIconSize = 22f;

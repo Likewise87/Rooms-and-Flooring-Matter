@@ -15,6 +15,7 @@ namespace TSA.RoomsAndFlooringMatter
             Util_Flooring.FloorPolicy.Dining => "Dining (eating speed)",
             Util_Flooring.FloorPolicy.Prison => "Prison (recruiting)",
             Util_Flooring.FloorPolicy.Deathrest => "Deathrest chamber",
+            Util_Flooring.FloorPolicy.Dormitory => "Dormitory",
             _ => policy.ToString()
         };
 

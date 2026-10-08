@@ -17,7 +17,8 @@ namespace TSA.RoomsAndFlooringMatter
             Seating,  // Dining/Rec seating comfort
             Dining,   // DiningRoom eating speed
             Prison,   // PrisonCell / PrisonBarracks recruit resistance
-            Deathrest // Biotech DeathrestChamber
+            Deathrest, // Biotech DeathrestChamber
+            Dormitory // Dormitories mod soft-compat (appended to preserve override ordinals)
         }
 
         private static HashSet<TerrainDef>[]? goodByPolicy;

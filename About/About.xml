@@ -6,7 +6,7 @@
 		<li>1.6</li>
 	</supportedVersions>
 	<packageId>TSA.RoomsAndFlooringMatter</packageId>
-	<description>Room and flooring bonuses: rest/comfort in bedrooms, barracks, and Hospitality guest rooms, workbench speeds, dining seating comfort and eating speed, faster prison recruiting, and Biotech deathrest chamber recovery when rooms are large, roofed, and properly floored. Good floor types are configurable per room category in mod settings.</description>
+	<description>Room and flooring bonuses: rest/comfort in bedrooms, dormitories (Dormitories mod), barracks, and Hospitality guest rooms, workbench speeds, dining seating comfort and eating speed, faster prison recruiting, and Biotech deathrest chamber recovery when rooms are large, roofed, and properly floored. Good floor types are configurable per room category in mod settings.</description>
 	<modDependencies>
 		<li>
 			<packageId>brrainz.harmony</packageId>
@@ -19,5 +19,6 @@
 		<li>brrainz.harmony</li>
 		<li>Ludeon.RimWorld.Biotech</li>
 		<li>Orion.Hospitality</li>
+		<li>stevescriggins.Dormitories</li>
 	</loadAfter>
 </ModMetaData>

@@ -14,6 +14,12 @@ namespace TSA.RoomsAndFlooringMatter
         public int minSizeBedroom = 17;
         public float coverageThresholdBedroom = 80f;
 
+        // Dormitory (Dormitories soft-compat; between bedroom and barracks)
+        public float baseBonusDormitory = 0.085f;       // +8.5%pt
+        public float flooringBonusDormitory = 0.10f;    // +10%pt
+        public int minSizeDormitory = 19;
+        public float coverageThresholdDormitory = 80f;
+
         // Barracks
         public float baseBonusBarracks = 0.075f;        // +7.5%pt
         public float flooringBonusBarracks = 0.10f;     // +10%pt
@@ -63,6 +69,7 @@ namespace TSA.RoomsAndFlooringMatter
         private Vector2 scrollPos = Vector2.zero;
 
         private bool bedroomExpanded = true;
+        private bool dormitoryExpanded = true;
         private bool barracksExpanded = true;
         private bool workshopExpanded = true;
         private bool researchExpanded = true;
@@ -80,6 +87,12 @@ namespace TSA.RoomsAndFlooringMatter
             Scribe_Values.Look(ref flooringBonusBedroom, "flooringBonusBedroom", 0.10f);
             Scribe_Values.Look(ref minSizeBedroom, "minSizeBedroom", 17);
             Scribe_Values.Look(ref coverageThresholdBedroom, "coverageThresholdBedroom", 80f);
+
+            // Dormitory
+            Scribe_Values.Look(ref baseBonusDormitory, "baseBonusDormitory", 0.085f);
+            Scribe_Values.Look(ref flooringBonusDormitory, "flooringBonusDormitory", 0.10f);
+            Scribe_Values.Look(ref minSizeDormitory, "minSizeDormitory", 19);
+            Scribe_Values.Look(ref coverageThresholdDormitory, "coverageThresholdDormitory", 80f);
 
             // Barracks
             Scribe_Values.Look(ref baseBonusBarracks, "baseBonusBarracks", 0.075f);
@@ -144,13 +157,13 @@ namespace TSA.RoomsAndFlooringMatter
             SettingsUiUtil.DrawMenuTopBar(listing, "Restore defaults", RestoreDefaults,
                 () =>
                 {
-                    bedroomExpanded = barracksExpanded = workshopExpanded = researchExpanded =
+                    bedroomExpanded = dormitoryExpanded = barracksExpanded = workshopExpanded = researchExpanded =
                         kitchenExpanded = seatingExpanded = diningExpanded = prisonExpanded =
                         deathrestExpanded = miscExpanded = true;
                 },
                 () =>
                 {
-                    bedroomExpanded = barracksExpanded = workshopExpanded = researchExpanded =
+                    bedroomExpanded = dormitoryExpanded = barracksExpanded = workshopExpanded = researchExpanded =
                         kitchenExpanded = seatingExpanded = diningExpanded = prisonExpanded =
                         deathrestExpanded = miscExpanded = false;
                 });
@@ -167,6 +180,21 @@ namespace TSA.RoomsAndFlooringMatter
                 coverageThresholdBedroom = SettingsUiUtil.LabeledSlider(listing, "Minimum good floor coverage", coverageThresholdBedroom, 0f, 100f,
                     "Percent of room tiles that must be good flooring to apply the flooring bonus.", 1f, SliderFormat.Fixed0, 80f);
                 DrawFloorPolicyControls(listing, Util_Flooring.FloorPolicy.Bedroom);
+            }
+
+            if (DormitoryCompat.DormitoryAvailable &&
+                SettingsUiUtil.DrawCollapsibleHeader(listing, "Dormitory bonuses", ref dormitoryExpanded, SettingsUiUtil.SectionHeaderColor,
+                    "Rest and comfort in Dormitories (Not Barracks) rooms. Between bedroom and barracks. Extra +%pt if enough 'good' flooring (fully roofed required)."))
+            {
+                baseBonusDormitory = SettingsUiUtil.LabeledSlider(listing, "Base dormitory bonus (+%pt)", baseBonusDormitory, 0f, 0.5f,
+                    "Base Rest/Comfort bonus applied in dormitories.", 0.005f, SliderFormat.PercentDecimal, 0.085f);
+                flooringBonusDormitory = SettingsUiUtil.LabeledSlider(listing, "Additional flooring bonus (+%pt)", flooringBonusDormitory, 0f, 0.5f,
+                    "Extra bonus when good-floor coverage meets the threshold.", 0.01f, SliderFormat.Percent, 0.10f);
+                minSizeDormitory = Mathf.RoundToInt(SettingsUiUtil.LabeledSlider(listing, "Minimum room size (tiles)", minSizeDormitory, 1f, 100f,
+                    "Rooms smaller than this never receive dormitory bonuses.", 1f, SliderFormat.Fixed0, 19f));
+                coverageThresholdDormitory = SettingsUiUtil.LabeledSlider(listing, "Minimum good floor coverage", coverageThresholdDormitory, 0f, 100f,
+                    "Percent of room tiles that must be good flooring to apply the flooring bonus.", 1f, SliderFormat.Fixed0, 80f);
+                DrawFloorPolicyControls(listing, Util_Flooring.FloorPolicy.Dormitory);
             }
 
             if (SettingsUiUtil.DrawCollapsibleHeader(listing, "Barracks bonuses", ref barracksExpanded, SettingsUiUtil.SectionHeaderColor,
@@ -285,6 +313,7 @@ namespace TSA.RoomsAndFlooringMatter
         {
             float h = 80f;
             if (bedroomExpanded) h += 194f;
+            if (DormitoryCompat.DormitoryAvailable && dormitoryExpanded) h += 194f;
             if (barracksExpanded) h += 194f;
             if (workshopExpanded) h += 164f;
             if (researchExpanded) h += 164f;
@@ -304,6 +333,11 @@ namespace TSA.RoomsAndFlooringMatter
             flooringBonusBedroom = 0.10f;
             minSizeBedroom = 17;
             coverageThresholdBedroom = 80f;
+
+            baseBonusDormitory = 0.085f;
+            flooringBonusDormitory = 0.10f;
+            minSizeDormitory = 19;
+            coverageThresholdDormitory = 80f;
 
             baseBonusBarracks = 0.075f;
             flooringBonusBarracks = 0.10f;

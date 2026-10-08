@@ -31,6 +31,17 @@ namespace TSA.RoomsAndFlooringMatter
                 if (scan.Coverage.Percent >= s.coverageThresholdBedroom)
                     add += s.flooringBonusBedroom;
             }
+            else if (DormitoryCompat.IsDormitory(room))
+            {
+                if (size < s.minSizeDormitory) return;
+
+                var scan = RoomFloorCache.Get(room, map, Util_Flooring.FloorPolicy.Dormitory);
+                if (!scan.FullyRoofed) return;
+
+                add += s.baseBonusDormitory;
+                if (scan.Coverage.Percent >= s.coverageThresholdDormitory)
+                    add += s.flooringBonusDormitory;
+            }
             else if (room.Role == RoomRoleDefOf.Barracks)
             {
                 if (size < s.minSizeBarracks) return;
@@ -59,10 +70,12 @@ namespace TSA.RoomsAndFlooringMatter
             var map = bed.Map;
             var room = bed.GetRoom();
             if (map == null || room == null || room.Role == null)
-                return "Bedroom/Barracks bonus: 0%pt (no valid room)";
+                return "Bedroom/Dormitory/Barracks bonus: 0%pt (no valid room)";
 
-            if (!HospitalityCompat.IsBedroomLike(room) && room.Role != RoomRoleDefOf.Barracks)
-                return "Bedroom/Barracks bonus: 0%pt (room is neither Bedroom, Guest room, nor Barracks)";
+            if (!HospitalityCompat.IsBedroomLike(room)
+                && !DormitoryCompat.IsDormitory(room)
+                && room.Role != RoomRoleDefOf.Barracks)
+                return "Bedroom/Dormitory/Barracks bonus: 0%pt (room is neither Bedroom, Guest room, Dormitory, nor Barracks)";
 
             var s = ModEntry.Settings;
             int size = room.CellCount;
@@ -82,7 +95,7 @@ namespace TSA.RoomsAndFlooringMatter
 
                 var scan = RoomFloorCache.Get(room, map, Util_Flooring.FloorPolicy.Bedroom);
                 if (!scan.FullyRoofed)
-                    return "Bedroom/Barracks bonus: 0%pt (room not fully roofed)";
+                    return "Bedroom/Dormitory/Barracks bonus: 0%pt (room not fully roofed)";
 
                 bool covOk = scan.Coverage.Percent >= s.coverageThresholdBedroom;
 
@@ -94,6 +107,32 @@ namespace TSA.RoomsAndFlooringMatter
                 float total = s.baseBonusBedroom;
                 if (covOk) total += s.flooringBonusBedroom;
                 sb.AppendLine($"Total: +{(int)(total * 100f)}%pt");
+            }
+            else if (DormitoryCompat.IsDormitory(room))
+            {
+                bool sizeOk = size >= s.minSizeDormitory;
+                if (!sizeOk)
+                {
+                    sb.AppendLine($"Base dormitory bonus: 0%pt (too small: {size}/{s.minSizeDormitory})");
+                    sb.AppendLine("Dormitory flooring bonus: 0%pt (room too small)");
+                    sb.AppendLine("Total: +0%pt");
+                    return sb.ToString().TrimEnd();
+                }
+
+                var scan = RoomFloorCache.Get(room, map, Util_Flooring.FloorPolicy.Dormitory);
+                if (!scan.FullyRoofed)
+                    return "Bedroom/Dormitory/Barracks bonus: 0%pt (room not fully roofed)";
+
+                bool covOk = scan.Coverage.Percent >= s.coverageThresholdDormitory;
+
+                sb.AppendLine($"Base dormitory bonus: +{s.baseBonusDormitory * 100f:0.#}%pt");
+                sb.AppendLine(covOk
+                    ? $"Dormitory flooring bonus: +{s.flooringBonusDormitory * 100f:0.#}%pt (coverage {Math.Round(scan.Coverage.Percent)}% ≥ {s.coverageThresholdDormitory:F0}%)"
+                    : $"Dormitory flooring bonus: 0%pt (insufficient coverage: {Math.Round(scan.Coverage.Percent)}%/{s.coverageThresholdDormitory:F0}%)");
+
+                float total = s.baseBonusDormitory;
+                if (covOk) total += s.flooringBonusDormitory;
+                sb.AppendLine($"Total: +{total * 100f:0.#}%pt");
             }
             else
             {
@@ -108,7 +147,7 @@ namespace TSA.RoomsAndFlooringMatter
 
                 var scan = RoomFloorCache.Get(room, map, Util_Flooring.FloorPolicy.Barracks);
                 if (!scan.FullyRoofed)
-                    return "Bedroom/Barracks bonus: 0%pt (room not fully roofed)";
+                    return "Bedroom/Dormitory/Barracks bonus: 0%pt (room not fully roofed)";
 
                 bool covOk = scan.Coverage.Percent >= s.coverageThresholdBarracks;
 
